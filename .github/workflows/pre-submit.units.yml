@@ -29,11 +29,19 @@ jobs:
   # Unit tests for Go code
   ######################################
 
-  unit-tests:
+  unit-tests-matrix:
     name: unit tests
     strategy:
       matrix:
-        go-version: [1.20.x]
+        go-version:
+          - "1.20"
+          - "1.19"
+          - "1.18"
+          - "1.17"
+          - "1.16"
+          - "1.15"
+          - "1.14"
+          - "1.13"
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     if: ${{ always() }}
@@ -51,6 +59,17 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.out
           fail_ci_if_error: true
+
+  # NOTE: needed for protected branch checks.
+  unit-tests:
+    runs-on: ubuntu-latest
+    needs: [unit-tests-matrix]
+    if: ${{ always() }}
+    env:
+      UNIT_TESTS_RESULT: ${{ needs.unit-tests-matrix.result }}
+    steps:
+      - run: |
+          [ "${UNIT_TESTS_RESULT}" == "success" ]
 
   # autogen for license headers
   ###############################

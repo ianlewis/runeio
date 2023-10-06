@@ -23,7 +23,7 @@ import (
 )
 
 // sliceEqual returns true if the two slices are equal.
-func sliceEqual[T comparable](l, r []T) bool {
+func sliceEqual(l, r []rune) bool {
 	if len(l) != len(r) {
 		return false
 	}
