@@ -15,10 +15,9 @@
 package runeio
 
 import (
-	"bufio"
-	"bytes"
 	"errors"
 	"io"
+	"strings"
 	"testing"
 )
 
@@ -105,13 +104,13 @@ func TestRuneReader(t *testing.T) {
 
 	testCases := []struct {
 		name     string
-		bytes    []byte
+		str      string
 		bufSize  int
 		expected []expectation
 	}{
 		{
-			name:  "single read",
-			bytes: []byte("Hello, 世界/World/Universe!"),
+			name: "single read",
+			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedRead{
 					size:          9,
@@ -121,8 +120,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "single read not exact",
-			bytes: []byte("Hello, 世界"),
+			name: "single read not exact",
+			str:  "Hello, 世界",
 			expected: []expectation{
 				&expectedRead{
 					size:          12,
@@ -133,8 +132,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "multiple reads exact",
-			bytes: []byte("Hello, 世界/World/Universe!"),
+			name: "multiple reads exact",
+			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedRead{
 					size:          3,
@@ -154,8 +153,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "multiple reads not exact",
-			bytes: []byte("Hello, 世界"),
+			name: "multiple reads not exact",
+			str:  "Hello, 世界",
 			expected: []expectation{
 				&expectedRead{
 					size:          3,
@@ -176,8 +175,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "single peek",
-			bytes: []byte("Hello, 世界/World/Universe!"),
+			name: "single peek",
+			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedPeek{
 					size:          3,
@@ -186,8 +185,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "multiple peek",
-			bytes: []byte("Hello, 世界/World/Universe!"),
+			name: "multiple peek",
+			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedPeek{
 					size:          3,
@@ -200,8 +199,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "read and peek",
-			bytes: []byte("Hello, 世界/World/Universe!"),
+			name: "read and peek",
+			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedRead{
 					size:          3,
@@ -215,8 +214,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "read and peek multi",
-			bytes: []byte("Hello, 世界/World/Universe!"),
+			name: "read and peek multi",
+			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedRead{
 					size:          3,
@@ -239,8 +238,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "peek exact",
-			bytes: []byte("Hello, 世界/World/Universe!"),
+			name: "peek exact",
+			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedPeek{
 					size:          9,
@@ -249,8 +248,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "peek not exact",
-			bytes: []byte("Hello, 世界"),
+			name: "peek not exact",
+			str:  "Hello, 世界",
 			expected: []expectation{
 				&expectedPeek{
 					size:          11,
@@ -260,8 +259,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "peek neg count",
-			bytes: []byte("Hello, 世界"),
+			name: "peek neg count",
+			str:  "Hello, 世界",
 			expected: []expectation{
 				&expectedPeek{
 					size:        -1,
@@ -270,8 +269,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "discard exact",
-			bytes: []byte("Hello, 世界/World/Universe!"),
+			name: "discard exact",
+			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedDiscard{
 					size:     9,
@@ -284,8 +283,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "discard not exact",
-			bytes: []byte("Hello, 世界"),
+			name: "discard not exact",
+			str:  "Hello, 世界",
 			expected: []expectation{
 				&expectedDiscard{
 					size:        11,
@@ -299,8 +298,8 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name:  "discard neg count",
-			bytes: []byte("Hello, 世界"),
+			name: "discard neg count",
+			str:  "Hello, 世界",
 			expected: []expectation{
 				&expectedDiscard{
 					size:        -1,
@@ -311,7 +310,7 @@ func TestRuneReader(t *testing.T) {
 		},
 		{
 			name:    "peek larger than buffer size",
-			bytes:   []byte("Hello, 世界"),
+			str:     "Hello, 世界",
 			bufSize: 5,
 			expected: []expectation{
 				&expectedPeek{
@@ -325,7 +324,7 @@ func TestRuneReader(t *testing.T) {
 	for i := range testCases {
 		c := testCases[i]
 
-		b := bufio.NewReader(bytes.NewReader(c.bytes))
+		b := strings.NewReader(c.str)
 
 		var r *RuneReader
 		if c.bufSize != 0 {

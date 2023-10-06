@@ -15,8 +15,8 @@
 package runeio
 
 import (
-	"bufio"
 	"fmt"
+	"io"
 	"unicode/utf8"
 )
 
@@ -31,10 +31,11 @@ var (
 	ErrNegativeCount = fmt.Errorf("negative count")
 )
 
-// RuneReader reads a byte stream of UTF-8 text as runes.
+// RuneReader implements buffered look-ahead for a io.RuneReader. It reads a
+// byte stream of UTF-8 text as runes.
 type RuneReader struct {
 	// rd is the underlying reader that reads bytes..
-	rd *bufio.Reader
+	rd io.RuneReader
 
 	// buf is the rune lookahead buffer.
 	buf []rune
@@ -49,15 +50,16 @@ type RuneReader struct {
 	err error
 }
 
-// NewReader returns a new RuneReader with whose buffer has the
-// default size of 1024 runes.
-func NewReader(r *bufio.Reader) *RuneReader {
+// NewReader returns a new RuneReader with whose buffer has the default size
+// of 1024 runes. NewReader is provided an underlying io.RuneReader (such as
+// bufio.Reader, or strings.Reader).
+func NewReader(r io.RuneReader) *RuneReader {
 	return NewReaderSize(r, defaultBufSize)
 }
 
 // NewReaderSize returns a new RuneReader with whose buffer has the
 // specified size.
-func NewReaderSize(r *bufio.Reader, size int) *RuneReader {
+func NewReaderSize(r io.RuneReader, size int) *RuneReader {
 	return &RuneReader{
 		rd:  r,
 		buf: make([]rune, size),
