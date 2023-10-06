@@ -106,6 +106,7 @@ func TestRuneReader(t *testing.T) {
 	testCases := []struct {
 		name     string
 		bytes    []byte
+		bufSize  int
 		expected []expectation
 	}{
 		{
@@ -264,7 +265,7 @@ func TestRuneReader(t *testing.T) {
 			expected: []expectation{
 				&expectedPeek{
 					size:        -1,
-					expectedErr: errNegativeCount,
+					expectedErr: ErrNegativeCount,
 				},
 			},
 		},
@@ -304,7 +305,18 @@ func TestRuneReader(t *testing.T) {
 				&expectedDiscard{
 					size:        -1,
 					expected:    0,
-					expectedErr: errNegativeCount,
+					expectedErr: ErrNegativeCount,
+				},
+			},
+		},
+		{
+			name:    "peek larger than buffer size",
+			bytes:   []byte("Hello, 世界"),
+			bufSize: 5,
+			expected: []expectation{
+				&expectedPeek{
+					size:        6,
+					expectedErr: ErrBufferFull,
 				},
 			},
 		},
@@ -313,7 +325,15 @@ func TestRuneReader(t *testing.T) {
 	for i := range testCases {
 		c := testCases[i]
 
-		r := NewReaderSize(bufio.NewReader(bytes.NewReader(c.bytes)), 11)
+		b := bufio.NewReader(bytes.NewReader(c.bytes))
+
+		var r *RuneReader
+		if c.bufSize != 0 {
+			r = NewReaderSize(b, c.bufSize)
+		} else {
+			r = NewReader(b)
+		}
+
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			for _, e := range c.expected {

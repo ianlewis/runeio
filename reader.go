@@ -24,8 +24,11 @@ import (
 const defaultBufSize = 1024
 
 var (
-	errBufferFull    = fmt.Errorf("buffer full")
-	errNegativeCount = fmt.Errorf("negative count")
+	// ErrBufferFull indicates that the current buffer size cannot support the operation.
+	ErrBufferFull = fmt.Errorf("buffer full")
+
+	// ErrNegativeCount is returned when a negative size is given.
+	ErrNegativeCount = fmt.Errorf("negative count")
 )
 
 // RuneReader reads a byte stream of UTF-8 text as runes.
@@ -110,7 +113,7 @@ func (r *RuneReader) ReadRune() (rune, int, error) {
 // reading from the underlying reader.
 func (r *RuneReader) Discard(n int) (int, error) {
 	if n < 0 {
-		return 0, errNegativeCount
+		return 0, ErrNegativeCount
 	}
 
 	for i := 0; i < n; i++ {
@@ -129,11 +132,11 @@ func (r *RuneReader) Discard(n int) (int, error) {
 // n is larger than the reader's buffer size.
 func (r *RuneReader) Peek(n int) ([]rune, error) {
 	if n < 0 {
-		return nil, errNegativeCount
+		return nil, ErrNegativeCount
 	}
 
 	if n > len(r.buf) {
-		return nil, errBufferFull
+		return nil, ErrBufferFull
 	}
 
 	if n > r.Buffered() {
@@ -145,7 +148,7 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 		n = r.Buffered()
 		err = r.readErr()
 		if err == nil {
-			err = errBufferFull
+			err = ErrBufferFull
 		}
 	}
 
