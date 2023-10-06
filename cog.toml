@@ -1,0 +1,24 @@
+# cog.toml
+
+# Configuration for cocogitto. cocogitto is a tool for managing conventional
+# commits, version bumps etc..
+
+pre_bump_hooks = [
+    "echo {{version}}",
+]
+
+
+post_bump_hooks = [
+    "git push",
+    "git push origin {{version}}",
+]
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote"
+remote = "github.com"
+repository = "runeio"
+owner = "ianlewis"
+authors = [
+  { username = "ianlewis", signature = "Ian Lewis"}
+]
