@@ -50,7 +50,7 @@ type RuneReader struct {
 }
 
 // NewReader returns a new RuneReader with whose buffer has the
-// default size.
+// default size of 1024 runes.
 func NewReader(r *bufio.Reader) *RuneReader {
 	return NewReaderSize(r, defaultBufSize)
 }
@@ -62,12 +62,6 @@ func NewReaderSize(r *bufio.Reader, size int) *RuneReader {
 		rd:  r,
 		buf: make([]rune, size),
 	}
-}
-
-// Buffered returns the number of runes that can be read from the current
-// buffer.
-func (r *RuneReader) Buffered() int {
-	return r.e - r.r
 }
 
 // Read reads runes into p and returns the number of runes read. If the number
@@ -94,11 +88,9 @@ func (r *RuneReader) Read(p []rune) (int, error) {
 // byte and returns unicode.ReplacementChar (U+FFFD) with a size of 1. If an
 // error occurs then it returns (utf8.RuneError, err).
 func (r *RuneReader) ReadRune() (rune, int, error) {
-	if r.Buffered() == 0 {
-		r.fill()
-	}
+	r.fill(1)
 
-	if r.Buffered() == 0 {
+	if r.buffered() == 0 {
 		return 0, 0, r.readErr()
 	}
 
@@ -139,13 +131,13 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 		return nil, ErrBufferFull
 	}
 
-	if n > r.Buffered() {
-		r.fill()
+	if n > r.buffered() {
+		r.fill(n)
 	}
 
 	var err error
-	if n > r.Buffered() {
-		n = r.Buffered()
+	if n > r.buffered() {
+		n = r.buffered()
 		err = r.readErr()
 		if err == nil {
 			err = ErrBufferFull
@@ -155,17 +147,21 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 	return r.buf[r.r : r.r+n], err
 }
 
-// fill fills the RuneReader's buffer.
-func (r *RuneReader) fill() {
-	// Slide existing data to beginning.
-	if r.r > 0 && r.Buffered() < len(r.buf) {
+// buffered returns the number of runes that can be read from the buffer.
+func (r *RuneReader) buffered() int {
+	return r.e - r.r
+}
+
+// fill fills the RuneReader's buffer so that it contains n runes.
+func (r *RuneReader) fill(n int) {
+	if r.r > 0 && r.e-r.r < n {
 		copy(r.buf, r.buf[r.r:r.e])
 		r.e -= r.r
 		r.r = 0
 	}
 
 	// Fill the rest of the buffer.
-	for ; r.e < len(r.buf); r.e++ {
+	for ; r.e < n; r.e++ {
 		rn, _, err := r.rd.ReadRune()
 		if err != nil {
 			r.err = err
