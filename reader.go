@@ -149,6 +149,11 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 	return r.buf[r.r : r.r+n], err
 }
 
+// Size returns the size of the underlying buffer in number of runes.
+func (r *RuneReader) Size() int {
+	return len(r.buf)
+}
+
 // buffered returns the number of runes that can be read from the buffer.
 func (r *RuneReader) buffered() int {
 	return r.e - r.r
