@@ -71,6 +71,19 @@ jobs:
       - run: |
           [ "${UNIT_TESTS_RESULT}" == "success" ]
 
+  cog-check:
+    runs-on: ubuntu-latest
+    name: check conventional commit compliance
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        with:
+          fetch-depth: 0
+          # pick the pr HEAD instead of the merge commit
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Conventional commit check
+        uses: cocogitto/cocogitto-action@ac6260150ee57e3164cd95b47fc84cdee9e3444c # v3.5
+
   # autogen for license headers
   ###############################
 

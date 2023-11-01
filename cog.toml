@@ -5,12 +5,14 @@
 
 pre_bump_hooks = [
     "echo {{version}}",
+    "git checkout -b release-{{version}}"
 ]
 
 
 post_bump_hooks = [
-    "git push",
-    "git push origin {{version}}",
+    # Delete the version because we have to create a PR first.
+    "git tag -d {{version}}",
+    "gh pr create --title \"$(git log -1 --pretty=%B | head -n1)\""
 ]
 
 [changelog]
