@@ -220,8 +220,7 @@ number MAJOR.MINOR.PATCH, increment the:
 ### Conventional Commits
 
 PR titles are required to be in [Conventional Commits] format. Supported
-prefixes are defined in the file
-[`.github/pr-title-checker-config.json`](./.github/pr-title-checker-config.json).
+prefixes are defined in the file [`cog.toml`](./cog.toml).
 
 The following prefixes are supported:
 

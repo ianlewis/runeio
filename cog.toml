@@ -11,12 +11,23 @@ pre_bump_hooks = [
     "git checkout -b release-{{version}}"
 ]
 
-
 post_bump_hooks = [
     # Delete the version because we have to create a PR first.
-    "git tag -d {{version}}",
-    "gh pr create --title \"$(git log -1 --pretty=%B | head -n1)\""
+    "git tag -d {{version}}"
 ]
+
+[commit_types]
+feat = { changelog_title = "Features" }
+fix = { changelog_title = "Bug Fixes" }
+docs = { changelog_title = "", omit_from_changelog = true }
+chore = { changelog_title = "", omit_from_changelog = true }
+refactor = { changelog_title = "", omit_from_changelog = true }
+style = { changelog_title = "", omit_from_changelog = true }
+build = { changelog_title = "", omit_from_changelog = true }
+ci = { changelog_title = "", omit_from_changelog = true }
+perf = { changelog_title = "Performance Improvements" }
+revert = { changelog_title = "", omit_from_changelog = true }
+test = { changelog_title = "", omit_from_changelog = true }
 
 [changelog]
 path = "CHANGELOG.md"
