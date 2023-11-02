@@ -111,6 +111,18 @@ func (e *expectedSize) expect(t *testing.T, r *RuneReader) {
 	}
 }
 
+type expectedUnreadRune struct {
+	expectedErr error
+}
+
+func (e *expectedUnreadRune) expect(t *testing.T, r *RuneReader) {
+	t.Helper()
+	err := r.UnreadRune()
+	if got, want := err, e.expectedErr; !errors.Is(got, want) {
+		t.Errorf("expected error: got: %v, want: %v", got, want)
+	}
+}
+
 func TestRuneReader(t *testing.T) {
 	t.Parallel()
 
@@ -508,6 +520,94 @@ func TestRuneReader(t *testing.T) {
 				},
 				&expectedSize{
 					expectedSize: defaultBufSize,
+				},
+			},
+		},
+		{
+			name: "unread no read",
+			str:  "Hello, 世界/World/Universe!",
+			expected: []expectation{
+				&expectedUnreadRune{
+					expectedErr: ErrInvalidUnreadRune,
+				},
+			},
+		},
+		{
+			name: "single unread",
+			str:  "Hello, 世界/World/Universe!",
+			expected: []expectation{
+				&expectedRead{
+					size:          9,
+					expectedNum:   9,
+					expectedRunes: []rune("Hello, 世界"),
+				},
+				&expectedUnreadRune{},
+				&expectedPeek{
+					size:          1,
+					expectedRunes: []rune("界"),
+				},
+			},
+		},
+		{
+			name: "multi-unread",
+			str:  "Hello, 世界/World/Universe!",
+			expected: []expectation{
+				&expectedRead{
+					size:          9,
+					expectedNum:   9,
+					expectedRunes: []rune("Hello, 世界"),
+				},
+				&expectedUnreadRune{},
+				&expectedUnreadRune{
+					expectedErr: ErrInvalidUnreadRune,
+				},
+				&expectedPeek{
+					size:          1,
+					expectedRunes: []rune("界"),
+				},
+			},
+		},
+		{
+			name: "peek-unread",
+			str:  "Hello, 世界/World/Universe!",
+			expected: []expectation{
+				&expectedRead{
+					size:          9,
+					expectedNum:   9,
+					expectedRunes: []rune("Hello, 世界"),
+				},
+				&expectedPeek{
+					size:          3,
+					expectedRunes: []rune("/Wo"),
+				},
+				&expectedUnreadRune{
+					expectedErr: ErrInvalidUnreadRune,
+				},
+				&expectedPeek{
+					size:          3,
+					expectedRunes: []rune("/Wo"),
+				},
+			},
+		},
+		{
+			name: "discard-unread",
+			str:  "Hello, 世界/World/Universe!",
+			expected: []expectation{
+				&expectedRead{
+					size:          9,
+					expectedNum:   9,
+					expectedRunes: []rune("Hello, 世界"),
+				},
+				&expectedDiscard{
+					size:     3,
+					expected: 3,
+				},
+				&expectedUnreadRune{
+					expectedErr: ErrInvalidUnreadRune,
+				},
+				&expectedPeek{
+					size:          3,
+					expectedRunes: []rune("rld"),
 				},
 			},
 		},

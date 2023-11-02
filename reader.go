@@ -27,6 +27,9 @@ var (
 	// ErrBufferFull indicates that the current buffer size cannot support the operation.
 	ErrBufferFull = errors.New("buffer full")
 
+	// ErrInvalidUnreadRune is returned when a rune cannot be unread.
+	ErrInvalidUnreadRune = errors.New("invalid use of UnreadRune")
+
 	// ErrNegativeCount is returned when a negative size is given.
 	ErrNegativeCount = errors.New("negative count")
 )
@@ -39,6 +42,9 @@ type RuneReader struct {
 
 	// buf is the rune lookahead buffer.
 	buf []rune
+
+	// lastRune is the last read rune.
+	lastRune rune
 
 	// r is the read index into the buffer.
 	r int
@@ -61,8 +67,9 @@ func NewReader(r io.RuneReader) *RuneReader {
 // specified size.
 func NewReaderSize(r io.RuneReader, size int) *RuneReader {
 	return &RuneReader{
-		rd:  r,
-		buf: make([]rune, size),
+		rd:       r,
+		buf:      make([]rune, size),
+		lastRune: -1,
 	}
 }
 
@@ -98,6 +105,7 @@ func (r *RuneReader) ReadRune() (rune, int, error) {
 
 	rn := r.buf[r.r]
 	r.r++
+	r.lastRune = rn
 	return rn, utf8.RuneLen(rn), nil
 }
 
@@ -105,6 +113,9 @@ func (r *RuneReader) ReadRune() (rune, int, error) {
 // of runes discarded is different than n, then an error is returned explaining
 // the reason. If 0 <= n <= r.Buffered(), Discard is guaranteed to succeed without
 // reading from the underlying reader.
+//
+// Calling Discard prevents an UnreadRune call from succeeding until the next
+// read operation.
 func (r *RuneReader) Discard(n int) (int, error) {
 	if n < 0 {
 		return 0, ErrNegativeCount
@@ -117,6 +128,8 @@ func (r *RuneReader) Discard(n int) (int, error) {
 		}
 	}
 
+	r.lastRune = -1
+
 	return n, nil
 }
 
@@ -124,6 +137,9 @@ func (r *RuneReader) Discard(n int) (int, error) {
 // being valid at the next read call. If Peek returns fewer than n bytes, it also
 // returns an error explaining why the read is short. An error is returned if
 // n is larger than the reader's buffer size.
+//
+// Calling Peek prevents an UnreadRune call from succeeding until the next
+// read operation.
 func (r *RuneReader) Peek(n int) ([]rune, error) {
 	if n < 0 {
 		return nil, ErrNegativeCount
@@ -132,6 +148,8 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 	if n > len(r.buf) {
 		return nil, ErrBufferFull
 	}
+
+	r.lastRune = -1
 
 	if n > r.buffered() {
 		r.fill(n)
@@ -152,6 +170,21 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 // Size returns the size of the underlying buffer in number of runes.
 func (r *RuneReader) Size() int {
 	return len(r.buf)
+}
+
+// UnreadRune unreads the last rune. Only the most recently read rune can be unread.
+//
+// UnreadRune returns an error if the most recent method called on the
+// RuneReader was not a read operation. Notably, Peek, and Discard are not
+// considered read operations.
+func (r *RuneReader) UnreadRune() error {
+	if r.lastRune < 0 {
+		return ErrInvalidUnreadRune
+	}
+	r.r--
+	r.buf[r.r] = r.lastRune
+	r.lastRune = -1
+	return nil
 }
 
 // buffered returns the number of runes that can be read from the buffer.
