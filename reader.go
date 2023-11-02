@@ -154,16 +154,11 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 		r.fill(n)
 	}
 
-	var err error
 	if n > r.buffered() {
 		n = r.buffered()
-		err = r.readErr()
-		if err == nil {
-			err = ErrBufferFull
-		}
 	}
 
-	return r.buf[r.r : r.r+n], err
+	return r.buf[r.r : r.r+n], r.readErr()
 }
 
 // Reset discards any buffered data, resets all state, and switches the
