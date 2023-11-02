@@ -19,6 +19,7 @@ import (
 	"io"
 	"strings"
 	"testing"
+	"unicode"
 )
 
 // sliceEqual returns true if the two slices are equal.
@@ -408,6 +409,105 @@ func TestRuneReader(t *testing.T) {
 				},
 				&expectedSize{
 					expectedSize: 5,
+				},
+			},
+		},
+		{
+			name: "utf-8 replacement character",
+			str:  string([]byte{0xef, 0xbf, 0xbd}),
+			expected: []expectation{
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+				&expectedRead{
+					size:          1,
+					expectedNum:   1,
+					expectedRunes: []rune{unicode.ReplacementChar},
+				},
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+			},
+		},
+		{
+			name: "utf-8 two continuation bytes",
+			str:  string([]byte{0x80, 0x80}),
+			expected: []expectation{
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+				&expectedRead{
+					size:          1,
+					expectedNum:   1,
+					expectedRunes: []rune{unicode.ReplacementChar},
+				},
+				&expectedRead{
+					size:          1,
+					expectedNum:   1,
+					expectedRunes: []rune{unicode.ReplacementChar},
+				},
+				&expectedRead{
+					size:        1,
+					expectedErr: io.EOF,
+				},
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+			},
+		},
+		{
+			name: "utf-8 invalid bytes",
+			str:  string([]byte{0xfe, 0xfe, 0xff, 0xff}),
+			expected: []expectation{
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+				&expectedRead{
+					size:          1,
+					expectedNum:   1,
+					expectedRunes: []rune{unicode.ReplacementChar},
+				},
+				&expectedRead{
+					size:          2,
+					expectedNum:   2,
+					expectedRunes: []rune{unicode.ReplacementChar, unicode.ReplacementChar},
+				},
+				&expectedRead{
+					size:          2,
+					expectedNum:   1,
+					expectedRunes: []rune{unicode.ReplacementChar},
+					expectedErr:   io.EOF,
+				},
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+			},
+		},
+		{
+			name: "utf-8 valid and invalid mixed",
+			str:  string([]byte{0xfe, 0xfe, 0xe4, 0xb8, 0x96, 0xe7, 0x95, 0x8c, 0xff, 0xff}),
+			expected: []expectation{
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+				&expectedRead{
+					size:          2,
+					expectedNum:   2,
+					expectedRunes: []rune{unicode.ReplacementChar, unicode.ReplacementChar},
+				},
+				&expectedRead{
+					size:          2,
+					expectedNum:   2,
+					expectedRunes: []rune("世界"),
+				},
+				&expectedRead{
+					size:          3,
+					expectedNum:   2,
+					expectedRunes: []rune{unicode.ReplacementChar, unicode.ReplacementChar},
+					expectedErr:   io.EOF,
+				},
+				&expectedSize{
+					expectedSize: defaultBufSize,
 				},
 			},
 		},

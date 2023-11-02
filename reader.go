@@ -15,7 +15,7 @@
 package runeio
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"unicode/utf8"
 )
@@ -25,10 +25,10 @@ const defaultBufSize = 1024
 
 var (
 	// ErrBufferFull indicates that the current buffer size cannot support the operation.
-	ErrBufferFull = fmt.Errorf("buffer full")
+	ErrBufferFull = errors.New("buffer full")
 
 	// ErrNegativeCount is returned when a negative size is given.
-	ErrNegativeCount = fmt.Errorf("negative count")
+	ErrNegativeCount = errors.New("negative count")
 )
 
 // RuneReader implements buffered look-ahead for a io.RuneReader. It reads a
