@@ -22,6 +22,10 @@ issues:
     - EXC0013
     - EXC0014
     - EXC0015
+  exclude-rules:
+    - path: example_test.go
+      linters:
+        - errcheck
   # Maximum issues count per one linter.
   # Set to 0 to disable.
   # Default: 50

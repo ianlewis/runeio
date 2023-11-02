@@ -100,6 +100,27 @@ func (e *expectedRead) expect(t *testing.T, r *RuneReader) {
 	}
 }
 
+type expectedReadRune struct {
+	expectedRune rune
+	expectedSize int
+	expectedErr  error
+}
+
+func (e *expectedReadRune) expect(t *testing.T, r *RuneReader) {
+	t.Helper()
+	rn, size, err := r.ReadRune()
+	if got, want := err, e.expectedErr; !errors.Is(got, want) {
+		t.Errorf("expected error: got: %v, want: %v", got, want)
+	}
+
+	if got, want := size, e.expectedSize; got != want {
+		t.Errorf("ReadRune size: got: %v, want: %v", got, want)
+	}
+	if got, want := rn, e.expectedRune; got != want {
+		t.Errorf("ReadRune rune: got: %v, want: %v", got, want)
+	}
+}
+
 type expectedSize struct {
 	expectedSize int
 }
@@ -608,6 +629,55 @@ func TestRuneReader(t *testing.T) {
 				&expectedPeek{
 					size:          3,
 					expectedRunes: []rune("rld"),
+				},
+			},
+		},
+		{
+			name: "readrune",
+			str:  "Hello, 世界!",
+			expected: []expectation{
+				&expectedReadRune{
+					expectedRune: 'H',
+					expectedSize: 1,
+				},
+				&expectedReadRune{
+					expectedRune: 'e',
+					expectedSize: 1,
+				},
+				&expectedReadRune{
+					expectedRune: 'l',
+					expectedSize: 1,
+				},
+				&expectedReadRune{
+					expectedRune: 'l',
+					expectedSize: 1,
+				},
+				&expectedReadRune{
+					expectedRune: 'o',
+					expectedSize: 1,
+				},
+				&expectedReadRune{
+					expectedRune: ',',
+					expectedSize: 1,
+				},
+				&expectedReadRune{
+					expectedRune: ' ',
+					expectedSize: 1,
+				},
+				&expectedReadRune{
+					expectedRune: '世',
+					expectedSize: 3,
+				},
+				&expectedReadRune{
+					expectedRune: '界',
+					expectedSize: 3,
+				},
+				&expectedReadRune{
+					expectedRune: '!',
+					expectedSize: 1,
+				},
+				&expectedReadRune{
+					expectedErr: io.EOF,
 				},
 			},
 		},
