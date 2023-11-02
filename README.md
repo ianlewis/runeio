@@ -20,6 +20,8 @@ The package provides a buffered `RuneReader` that implements the
 purpose is to buffer the reading of runes and allow users to `Peek` ahead by a
 number of runes rather than a number of bytes as with the `bufio.Reader`.
 
+## Examples
+
 A single rune can be read with `ReadRune`.
 
 ```golang
@@ -65,3 +67,23 @@ fmt.Print(string(peeked))
 
 // Output: World!
 ```
+
+## Related Projects
+
+- [pelletier/go-buffruneio](https://github.com/pelletier/go-buffruneio): Another
+  buffering implementation of `io.RuneScanner`.
+  - Uses a custom `badRune` value for encoding errors instead of
+    `unicode.ReplacementChar`
+  - Uses a custom `EOF` rune value instead of just returning `io.EOF`.
+  - The undo buffer grows unbounded until `Forget` is called.
+  - `NewReader` also takes a `io.Reader` which is wrapped in a `bufio.Reader`
+    when it could just take an `io.RuneReader` since it the implementation only
+    requires`ReadRune` from the underlying reader.
+- [SteelSeries/bufrr](https://github.com/SteelSeries/bufrr): Another buffering
+  implementation of `io.RuneScanner`.
+  - Implements only a static single rune buffer. This means that only one rune
+    could be peeked at.
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md)
