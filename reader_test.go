@@ -100,6 +100,20 @@ func (e *expectedRead) expect(t *testing.T, r *RuneReader) {
 	}
 }
 
+type expectedReset struct {
+	str       string
+	selfReset bool
+}
+
+func (e *expectedReset) expect(t *testing.T, r *RuneReader) {
+	t.Helper()
+	if e.selfReset {
+		r.Reset(r)
+	} else {
+		r.Reset(strings.NewReader(e.str))
+	}
+}
+
 type expectedReadRune struct {
 	expectedRune rune
 	expectedSize int
@@ -681,6 +695,44 @@ func TestRuneReader(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "reset",
+			str:  "Hello, 世界!",
+			expected: []expectation{
+				&expectedRead{
+					size:          9,
+					expectedNum:   9,
+					expectedRunes: []rune("Hello, 世界"),
+				},
+				&expectedReset{
+					str: "Hello World!",
+				},
+				&expectedRead{
+					size:          9,
+					expectedNum:   9,
+					expectedRunes: []rune("Hello Wor"),
+				},
+			},
+		},
+		{
+			name: "reset-noop",
+			str:  "Hello, 世界!",
+			expected: []expectation{
+				&expectedRead{
+					size:          7,
+					expectedNum:   7,
+					expectedRunes: []rune("Hello, "),
+				},
+				&expectedReset{
+					selfReset: true,
+				},
+				&expectedRead{
+					size:          3,
+					expectedNum:   3,
+					expectedRunes: []rune("世界!"),
+				},
+			},
+		},
 	}
 
 	for i := range testCases {
@@ -701,5 +753,109 @@ func TestRuneReader(t *testing.T) {
 				e.expect(t, r)
 			}
 		})
+	}
+}
+
+func TestRuneReader_Reset_ZeroValue(t *testing.T) {
+	t.Parallel()
+
+	r := new(RuneReader)
+	r.Reset(strings.NewReader("foo"))
+	b, err := r.Peek(2)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+	if got, want := string(b), "fo"; got != want {
+		t.Errorf("Peek: got: %q, want: %q", got, want)
+	}
+}
+
+func BenchmarkReadSmall(b *testing.B) {
+	s := strings.Repeat("x", 512+1)
+	rs := strings.NewReader(s)
+	rr := NewReader(rs)
+	buf := make([]rune, 512)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		//nolint:errcheck // errors not checked in benchmarks.
+		_, _ = rr.Read(buf)
+		rs.Reset(s)
+		rr.Reset(rs)
+	}
+}
+
+func BenchmarkReadLarge(b *testing.B) {
+	s := strings.Repeat("x", (32*1024)+1)
+	rs := strings.NewReader(s)
+	rr := NewReader(rs)
+	buf := make([]rune, 32*1024)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		//nolint:errcheck // errors not checked in benchmarks.
+		_, _ = rr.Read(buf)
+		rs.Reset(s)
+		rr.Reset(rs)
+	}
+}
+
+func BenchmarkPeekSmall(b *testing.B) {
+	n := 512
+	s := strings.Repeat("x", n+1)
+	rs := strings.NewReader(s)
+	rr := NewReader(rs)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		//nolint:errcheck // errors not checked in benchmarks.
+		_, _ = rr.Peek(n)
+		rs.Reset(s)
+		rr.Reset(rs)
+	}
+}
+
+func BenchmarkPeekLarge(b *testing.B) {
+	n := 32 * 1024
+	s := strings.Repeat("x", n+1)
+	rs := strings.NewReader(s)
+	rr := NewReaderSize(rs, n+1)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		//nolint:errcheck // errors not checked in benchmarks.
+		_, _ = rr.Peek(n)
+		rs.Reset(s)
+		rr.Reset(rs)
+	}
+}
+
+func BenchmarkDiscardSmall(b *testing.B) {
+	n := 512
+	s := strings.Repeat("x", n+1)
+	rs := strings.NewReader(s)
+	rr := NewReader(rs)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		//nolint:errcheck // errors not checked in benchmarks.
+		_, _ = rr.Discard(n)
+		rs.Reset(s)
+		rr.Reset(rs)
+	}
+}
+
+func BenchmarkDiscardLarge(b *testing.B) {
+	n := 32 * 1024
+	s := strings.Repeat("x", n+1)
+	rs := strings.NewReader(s)
+	rr := NewReaderSize(rs, n+1)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		//nolint:errcheck // errors not checked in benchmarks.
+		_, _ = rr.Discard(n)
+		rs.Reset(s)
+		rr.Reset(rs)
 	}
 }

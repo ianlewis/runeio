@@ -66,11 +66,10 @@ func NewReader(r io.RuneReader) *RuneReader {
 // NewReaderSize returns a new RuneReader with whose buffer has the
 // specified size.
 func NewReaderSize(r io.RuneReader, size int) *RuneReader {
-	return &RuneReader{
-		rd:       r,
-		buf:      make([]rune, size),
-		lastRune: -1,
-	}
+	buf := make([]rune, size)
+	rd := new(RuneReader)
+	rd.reset(buf, r)
+	return rd
 }
 
 // Read reads runes into p and returns the number of runes read. If the number
@@ -165,6 +164,28 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 	}
 
 	return r.buf[r.r : r.r+n], err
+}
+
+// Reset discards any buffered data, resets all state, and switches the
+// buffered reader to read from rd. Calling Reset on the zero value of Reader
+// initializes the internal buffer to the default size. Calling b.Reset(b) (that
+// is, resetting a Reader to itself) does nothing.
+func (r *RuneReader) Reset(rd io.RuneReader) {
+	if r == rd {
+		return
+	}
+	if r.buf == nil {
+		r.buf = make([]rune, defaultBufSize)
+	}
+	r.reset(r.buf, rd)
+}
+
+func (r *RuneReader) reset(buf []rune, rd io.RuneReader) {
+	*r = RuneReader{
+		rd:       rd,
+		buf:      buf,
+		lastRune: -1,
+	}
 }
 
 // Size returns the size of the underlying buffer in number of runes.
