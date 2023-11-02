@@ -34,10 +34,9 @@ var (
 	ErrNegativeCount = errors.New("negative count")
 )
 
-// RuneReader implements buffered look-ahead for a io.RuneReader. It reads a
-// byte stream of UTF-8 text as runes.
+// RuneReader implements buffered look-ahead for a io.RuneReader.
 type RuneReader struct {
-	// rd is the underlying reader that reads bytes..
+	// rd is the underlying rune reader.
 	rd io.RuneReader
 
 	// buf is the rune lookahead buffer.
@@ -92,9 +91,7 @@ func (r *RuneReader) Read(p []rune) (int, error) {
 }
 
 // ReadRune reads a single UTF-8 encoded Unicode character and returns the
-// rune and its size in bytes. If the encoded rune is invalid, it consumes one
-// byte and returns unicode.ReplacementChar (U+FFFD) with a size of 1. If an
-// error occurs then it returns (utf8.RuneError, err).
+// rune and its size in bytes.
 func (r *RuneReader) ReadRune() (rune, int, error) {
 	r.fill(1)
 
@@ -108,10 +105,9 @@ func (r *RuneReader) ReadRune() (rune, int, error) {
 	return rn, utf8.RuneLen(rn), nil
 }
 
-// Discard discards n runes and return the number discarded. If the number
-// of runes discarded is different than n, then an error is returned explaining
-// the reason. If 0 <= n <= r.Buffered(), Discard is guaranteed to succeed without
-// reading from the underlying reader.
+// Discard attempts to discard n runes and returns the number actually
+// discarded. If the number of runes discarded is different than n, then an
+// error is returned explaining the reason.
 //
 // Calling Discard prevents an UnreadRune call from succeeding until the next
 // read operation.
@@ -132,10 +128,10 @@ func (r *RuneReader) Discard(n int) (int, error) {
 	return n, nil
 }
 
-// Peek returns the next n bytes without advancing the reader. The bytes stop
-// being valid at the next read call. If Peek returns fewer than n bytes, it also
-// returns an error explaining why the read is short. An error is returned if
-// n is larger than the reader's buffer size.
+// Peek returns the next n runes from the buffer without advancing the reader.
+// The runes stop being valid at the next read call. If Peek returns fewer than
+// n runes, it also returns an error indicating why the read is short.
+// ErrBufferFull is returned if n is larger than the reader's buffer size.
 //
 // Calling Peek prevents an UnreadRune call from succeeding until the next
 // read operation.
@@ -163,7 +159,7 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 
 // Reset discards any buffered data, resets all state, and switches the
 // buffered reader to read from rd. Calling Reset on the zero value of Reader
-// initializes the internal buffer to the default size. Calling b.Reset(b) (that
+// initializes the internal buffer to the default size. Calling r.Reset(r) (that
 // is, resetting a Reader to itself) does nothing.
 func (r *RuneReader) Reset(rd io.RuneReader) {
 	if r == rd {
@@ -190,8 +186,8 @@ func (r *RuneReader) Size() int {
 
 // UnreadRune unreads the last rune. Only the most recently read rune can be unread.
 //
-// UnreadRune returns an error if the most recent method called on the
-// RuneReader was not a read operation. Notably, Peek, and Discard are not
+// UnreadRune returns ErrInvalidUnreadRune if the most recent method called on
+// the RuneReader was not a read operation. Notably, Peek, and Discard are not
 // considered read operations.
 func (r *RuneReader) UnreadRune() error {
 	if r.lastRune < 0 {
