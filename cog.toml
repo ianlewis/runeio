@@ -8,12 +8,12 @@ tag_prefix = "v"
 
 pre_bump_hooks = [
     "echo {{version}}",
-    "git checkout -b release-{{version}}"
+    "git checkout -b release-v{{version}}"
 ]
 
 post_bump_hooks = [
     # Delete the version because we have to create a PR first.
-    "git tag -d {{version}}"
+    "git tag -d v{{version}}"
 ]
 
 [commit_types]
