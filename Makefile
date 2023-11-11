@@ -15,6 +15,8 @@
 SHELL := /bin/bash
 OUTPUT_FORMAT ?= $(shell if [ "${GITHUB_ACTIONS}" == "true" ]; then echo "github"; else echo ""; fi)
 
+BENCHTIME ?= 1s
+
 .PHONY: help
 help: ## Shows all targets and help from the Makefile (this message).
 	@echo "runeio Makefile"
@@ -59,7 +61,7 @@ benchmark: ## Runs Go benchmarks.
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			extraargs="-v"; \
 		fi; \
-		go test $$extraargs -bench=. -run='^#' ./...
+		go test $$extraargs -bench=. -benchtime=$(BENCHTIME) -run='^#' ./...
 
 ## Tools
 #####################################################################
