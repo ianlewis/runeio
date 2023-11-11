@@ -792,6 +792,24 @@ func BenchmarkReadRune(b *testing.B) {
 	}
 }
 
+func BenchmarkReadRuneUnbuffered(b *testing.B) {
+	s := strings.Repeat("x", 32*1024)
+	rs := strings.NewReader(s)
+	rr := NewReader(rs)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_, _, err := rr.ReadRune()
+		if err != nil {
+			if !errors.Is(err, io.EOF) {
+				b.Fatal(err)
+			}
+			rs.Reset(s)
+			rr.Reset(rs)
+		}
+	}
+}
+
 func BenchmarkReadSmall(b *testing.B) {
 	s := strings.Repeat("x", 32*1024)
 	rs := strings.NewReader(s)
