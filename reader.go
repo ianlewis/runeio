@@ -93,7 +93,9 @@ func (r *RuneReader) Read(p []rune) (int, error) {
 // ReadRune reads a single UTF-8 encoded Unicode character and returns the
 // rune and its size in bytes.
 func (r *RuneReader) ReadRune() (rune, int, error) {
-	r.fill(1)
+	if r.Buffered() == 0 {
+		r.fill()
+	}
 
 	if r.Buffered() == 0 {
 		return 0, 0, r.readErr()
@@ -147,14 +149,16 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 	r.lastRune = -1
 
 	if n > r.Buffered() {
-		r.fill(n)
+		r.fill()
 	}
 
+	var err error
 	if n > r.Buffered() {
 		n = r.Buffered()
+		err = r.readErr()
 	}
 
-	return r.buf[r.r : r.r+n], r.readErr()
+	return r.buf[r.r : r.r+n], err
 }
 
 // Reset discards any buffered data, resets all state, and switches the
@@ -205,15 +209,15 @@ func (r *RuneReader) Buffered() int {
 }
 
 // fill fills the RuneReader's buffer so that it contains n runes.
-func (r *RuneReader) fill(n int) {
-	if r.r > 0 && r.e-r.r < n {
+func (r *RuneReader) fill() {
+	if r.r > 0 {
 		copy(r.buf, r.buf[r.r:r.e])
 		r.e -= r.r
 		r.r = 0
 	}
 
 	// Fill the rest of the buffer.
-	for ; r.e < n; r.e++ {
+	for ; r.e < len(r.buf); r.e++ {
 		rn, _, err := r.rd.ReadRune()
 		if err != nil {
 			r.err = err

@@ -775,7 +775,7 @@ func BenchmarkReadRune(b *testing.B) {
 	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
 	rr := NewReaderSize(rs, n)
-	rr.fill(n)
+	rr.fill()
 	b.ResetTimer()
 
 	var total int
@@ -789,7 +789,7 @@ func BenchmarkReadRune(b *testing.B) {
 			b.StopTimer()
 			rs.Reset(s)
 			rr.Reset(rs)
-			rr.fill(rr.Size())
+			rr.fill()
 			total = 0
 			b.StartTimer()
 		}
@@ -824,7 +824,7 @@ func BenchmarkReadSmall(b *testing.B) {
 	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
 	rr := NewReaderSize(rs, n)
-	rr.fill(n)
+	rr.fill()
 	buf := make([]rune, readsize)
 	b.ResetTimer()
 
@@ -839,7 +839,7 @@ func BenchmarkReadSmall(b *testing.B) {
 			b.StopTimer()
 			rs.Reset(s)
 			rr.Reset(rs)
-			rr.fill(n)
+			rr.fill()
 			total = 0
 			b.StartTimer()
 		}
@@ -851,7 +851,7 @@ func BenchmarkReadLarge(b *testing.B) {
 	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
 	rr := NewReaderSize(rs, n)
-	rr.fill(n)
+	rr.fill()
 	buf := make([]rune, n)
 	b.ResetTimer()
 
@@ -864,7 +864,7 @@ func BenchmarkReadLarge(b *testing.B) {
 		b.StopTimer()
 		rs.Reset(s)
 		rr.Reset(rs)
-		rr.fill(n)
+		rr.fill()
 		b.StartTimer()
 	}
 }
@@ -941,7 +941,7 @@ func BenchmarkPeekSmall(b *testing.B) {
 	s := strings.Repeat("x", 512)
 	rs := strings.NewReader(s)
 	rr := NewReaderSize(rs, rs.Len())
-	rr.fill(rr.Size())
+	rr.fill()
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
@@ -956,7 +956,7 @@ func BenchmarkPeekLarge(b *testing.B) {
 	s := strings.Repeat("x", 32*1024)
 	rs := strings.NewReader(s)
 	rr := NewReaderSize(rs, rs.Len())
-	rr.fill(rr.Size())
+	rr.fill()
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
@@ -973,7 +973,7 @@ func BenchmarkDiscardSmall(b *testing.B) {
 	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
 	rr := NewReaderSize(rs, n)
-	rr.fill(n)
+	rr.fill()
 	b.ResetTimer()
 
 	var total int
@@ -987,7 +987,7 @@ func BenchmarkDiscardSmall(b *testing.B) {
 			b.StopTimer()
 			rs.Reset(s)
 			rr.Reset(rs)
-			rr.fill(rr.Size())
+			rr.fill()
 			total = 0
 			b.StartTimer()
 		}
@@ -999,7 +999,7 @@ func BenchmarkDiscardLarge(b *testing.B) {
 	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
 	rr := NewReaderSize(rs, n)
-	rr.fill(n)
+	rr.fill()
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
@@ -1011,7 +1011,7 @@ func BenchmarkDiscardLarge(b *testing.B) {
 		b.StopTimer()
 		rs.Reset(s)
 		rr.Reset(rs)
-		rr.fill(n)
+		rr.fill()
 		b.StartTimer()
 	}
 }
@@ -1028,7 +1028,7 @@ func BenchmarkFill(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		rr.fill(n)
+		rr.fill()
 		if rr.err != nil {
 			b.Fatal(rr.err)
 		}
