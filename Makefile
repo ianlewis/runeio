@@ -16,6 +16,7 @@ SHELL := /bin/bash
 OUTPUT_FORMAT ?= $(shell if [ "${GITHUB_ACTIONS}" == "true" ]; then echo "github"; else echo ""; fi)
 
 BENCHTIME ?= 1s
+TESTCOUNT ?= 1
 
 .PHONY: help
 help: ## Shows all targets and help from the Makefile (this message).
@@ -48,7 +49,7 @@ unit-test: ## Runs unit tests.
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			extraargs="-v"; \
 		fi; \
-		go test $$extraargs -mod=vendor -race -coverprofile=coverage.out -covermode=atomic ./...
+		go test $$extraargs -mod=vendor -count=$(TESTCOUNT) -race -coverprofile=coverage.out -covermode=atomic ./...
 
 ## Benchmarking
 #####################################################################
@@ -61,7 +62,7 @@ benchmark: ## Runs Go benchmarks.
 		if [ "$(OUTPUT_FORMAT)" == "github" ]; then \
 			extraargs="-v"; \
 		fi; \
-		go test $$extraargs -bench=. -benchtime=$(BENCHTIME) -run='^#' ./...
+		go test $$extraargs -bench=. -count=$(TESTCOUNT) -benchtime=$(BENCHTIME) -run='^#' ./...
 
 ## Tools
 #####################################################################

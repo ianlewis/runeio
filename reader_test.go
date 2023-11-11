@@ -51,7 +51,7 @@ func (e *expectedPeek) expect(t *testing.T, r *RuneReader) {
 	t.Helper()
 	p, err := r.Peek(e.size)
 	if got, want := err, e.expectedErr; !errors.Is(got, want) {
-		t.Errorf("expected error: got: %v, want: %v", got, want)
+		t.Errorf("Peek: expected error: got: %v, want: %v", got, want)
 	}
 
 	if got, want := p, e.expectedRunes; !sliceEqual(got, want) {
@@ -69,7 +69,7 @@ func (e *expectedDiscard) expect(t *testing.T, r *RuneReader) {
 	t.Helper()
 	n, err := r.Discard(e.size)
 	if got, want := err, e.expectedErr; !errors.Is(got, want) {
-		t.Errorf("expected error: got: %v, want: %v", got, want)
+		t.Errorf("Discard: expected error: got: %v, want: %v", got, want)
 	}
 
 	if got, want := n, e.expected; got != want {
@@ -89,7 +89,7 @@ func (e *expectedRead) expect(t *testing.T, r *RuneReader) {
 	p := make([]rune, e.size)
 	n, err := r.Read(p)
 	if got, want := err, e.expectedErr; !errors.Is(got, want) {
-		t.Errorf("expected error: got: %v, want: %v", got, want)
+		t.Errorf("Read: expected error: got: %v, want: %v", got, want)
 	}
 
 	if got, want := n, e.expectedNum; got != want {
@@ -124,7 +124,7 @@ func (e *expectedReadRune) expect(t *testing.T, r *RuneReader) {
 	t.Helper()
 	rn, size, err := r.ReadRune()
 	if got, want := err, e.expectedErr; !errors.Is(got, want) {
-		t.Errorf("expected error: got: %v, want: %v", got, want)
+		t.Errorf("ReadRune: expected error: got: %v, want: %v", got, want)
 	}
 
 	if got, want := size, e.expectedSize; got != want {
@@ -154,7 +154,7 @@ func (e *expectedUnreadRune) expect(t *testing.T, r *RuneReader) {
 	t.Helper()
 	err := r.UnreadRune()
 	if got, want := err, e.expectedErr; !errors.Is(got, want) {
-		t.Errorf("expected error: got: %v, want: %v", got, want)
+		t.Errorf("UnreadRune: expected error: got: %v, want: %v", got, want)
 	}
 }
 
@@ -763,7 +763,7 @@ func TestRuneReader_Reset_ZeroValue(t *testing.T) {
 	r.Reset(strings.NewReader("foo"))
 	b, err := r.Peek(2)
 	if err != nil {
-		t.Errorf("unexpected error: %v", err)
+		t.Errorf("Peek: unexpected error: %v", err)
 	}
 	if got, want := string(b), "fo"; got != want {
 		t.Errorf("Peek: got: %q, want: %q", got, want)
@@ -771,158 +771,227 @@ func TestRuneReader_Reset_ZeroValue(t *testing.T) {
 }
 
 func BenchmarkReadRune(b *testing.B) {
-	s := strings.Repeat("x", 512+1)
+	s := strings.Repeat("x", 32*1024)
 	rs := strings.NewReader(s)
-	rr := NewReader(rs)
+	rr := NewReaderSize(rs, rs.Len())
+	rr.fill(rr.Size())
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		//nolint:errcheck // errors not checked in benchmarks.
-		_, _, _ = rr.ReadRune()
-		rs.Reset(s)
-		rr.Reset(rs)
+		_, _, err := rr.ReadRune()
+		if err != nil {
+			if !errors.Is(err, io.EOF) {
+				b.Fatal(err)
+			}
+			b.StopTimer()
+			rs.Reset(s)
+			rr.Reset(rs)
+			rr.fill(rr.Size())
+			b.StartTimer()
+		}
 	}
 }
 
 func BenchmarkReadSmall(b *testing.B) {
-	s := strings.Repeat("x", 512+1)
+	s := strings.Repeat("x", 32*1024)
 	rs := strings.NewReader(s)
-	rr := NewReader(rs)
+	rr := NewReaderSize(rs, rs.Len())
+	rr.fill(rr.Size())
 	buf := make([]rune, 512)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		//nolint:errcheck // errors not checked in benchmarks.
-		_, _ = rr.Read(buf)
-		rs.Reset(s)
-		rr.Reset(rs)
+		_, err := rr.Read(buf)
+		if err != nil {
+			if !errors.Is(err, io.EOF) {
+				b.Fatal(err)
+			}
+			b.StopTimer()
+			rs.Reset(s)
+			rr.Reset(rs)
+			rr.fill(rr.Size())
+			b.StartTimer()
+		}
 	}
 }
 
 func BenchmarkReadLarge(b *testing.B) {
-	s := strings.Repeat("x", (32*1024)+1)
+	s := strings.Repeat("x", 32*1024*32)
 	rs := strings.NewReader(s)
-	rr := NewReader(rs)
+	rr := NewReaderSize(rs, rs.Len())
+	rr.fill(rr.Size())
 	buf := make([]rune, 32*1024)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		//nolint:errcheck // errors not checked in benchmarks.
-		_, _ = rr.Read(buf)
-		rs.Reset(s)
-		rr.Reset(rs)
+		_, err := rr.Read(buf)
+		if err != nil {
+			if !errors.Is(err, io.EOF) {
+				b.Fatal(err)
+			}
+			b.StopTimer()
+			rs.Reset(s)
+			rr.Reset(rs)
+			rr.fill(rr.Size())
+			b.StartTimer()
+		}
 	}
 }
 
 func BenchmarkNoCopySmall(b *testing.B) {
-	n := 512
-	s := strings.Repeat("x", n+1)
+	s := strings.Repeat("x", 32*1024)
 	rs := strings.NewReader(s)
-	rr := NewReader(rs)
+	rr := NewReaderSize(rs, 512)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		var read int
-		for read < n {
-			n := rr.Buffered()
-			if n == 0 {
-				n = 1
+		for {
+			var peekEOL bool
+			size := rr.Buffered()
+			if size == 0 {
+				size = rr.Size()
 			}
-			//nolint:errcheck // errors not checked in benchmarks.
-			buf, _ := rr.Peek(n)
+			buf, err := rr.Peek(size)
+			if err != nil {
+				if !errors.Is(err, io.EOF) {
+					b.Fatal(err)
+				}
+				peekEOL = true
+			}
 			p := len(buf)
-			//nolint:errcheck // errors not checked in benchmarks.
-			_, _ = rr.Discard(p)
-			read += p
+			_, err = rr.Discard(p)
+			if err != nil {
+				b.Fatal(err)
+			}
+			if peekEOL {
+				break
+			}
 		}
-
 		rs.Reset(s)
 		rr.Reset(rs)
 	}
 }
 
 func BenchmarkNoCopyLarge(b *testing.B) {
-	n := 32 * 1024
-	s := strings.Repeat("x", n+1)
+	s := strings.Repeat("x", 32*1024*32)
 	rs := strings.NewReader(s)
-	rr := NewReader(rs)
+	rr := NewReaderSize(rs, 32*1024)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		var read int
-		for read < n {
-			n := rr.Buffered()
-			if n == 0 {
-				n = 1
+		for {
+			var peekEOL bool
+			size := rr.Buffered()
+			if size == 0 {
+				size = rr.Size()
 			}
-			//nolint:errcheck // errors not checked in benchmarks.
-			buf, _ := rr.Peek(n)
+			buf, err := rr.Peek(size)
+			if err != nil {
+				if !errors.Is(err, io.EOF) {
+					b.Fatal(err)
+				}
+				peekEOL = true
+			}
 			p := len(buf)
-			//nolint:errcheck // errors not checked in benchmarks.
-			_, _ = rr.Discard(p)
-			read += p
+			_, err = rr.Discard(p)
+			if err != nil {
+				b.Fatal(err)
+			}
+			if peekEOL {
+				break
+			}
 		}
-
 		rs.Reset(s)
 		rr.Reset(rs)
 	}
 }
 
 func BenchmarkPeekSmall(b *testing.B) {
-	n := 512
-	s := strings.Repeat("x", n+1)
+	s := strings.Repeat("x", 512)
 	rs := strings.NewReader(s)
-	rr := NewReader(rs)
+	rr := NewReaderSize(rs, rs.Len())
+	rr.fill(rr.Size())
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		//nolint:errcheck // errors not checked in benchmarks.
-		_, _ = rr.Peek(n)
-		rs.Reset(s)
-		rr.Reset(rs)
+		_, err := rr.Peek(512)
+		if err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
 func BenchmarkPeekLarge(b *testing.B) {
-	n := 32 * 1024
-	s := strings.Repeat("x", n+1)
+	s := strings.Repeat("x", 32*1024)
 	rs := strings.NewReader(s)
-	rr := NewReaderSize(rs, n+1)
+	rr := NewReaderSize(rs, rs.Len())
+	rr.fill(rr.Size())
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		//nolint:errcheck // errors not checked in benchmarks.
-		_, _ = rr.Peek(n)
-		rs.Reset(s)
-		rr.Reset(rs)
+		_, err := rr.Peek(32 * 1024)
+		if err != nil {
+			b.Fatal(err)
+		}
 	}
 }
 
 func BenchmarkDiscardSmall(b *testing.B) {
-	n := 512
-	s := strings.Repeat("x", n+1)
+	s := strings.Repeat("x", 32*1024)
 	rs := strings.NewReader(s)
-	rr := NewReader(rs)
+	rr := NewReaderSize(rs, rs.Len())
+	rr.fill(rr.Size())
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		//nolint:errcheck // errors not checked in benchmarks.
-		_, _ = rr.Discard(n)
-		rs.Reset(s)
-		rr.Reset(rs)
+		_, err := rr.Discard(512)
+		if err != nil {
+			if !errors.Is(err, io.EOF) {
+				b.Fatal(err)
+			}
+			b.StopTimer()
+			rs.Reset(s)
+			rr.Reset(rs)
+			rr.fill(rr.Size())
+			b.StartTimer()
+		}
 	}
 }
 
 func BenchmarkDiscardLarge(b *testing.B) {
-	n := 32 * 1024
-	s := strings.Repeat("x", n+1)
+	s := strings.Repeat("x", 32*1024*32)
 	rs := strings.NewReader(s)
-	rr := NewReaderSize(rs, n+1)
+	rr := NewReaderSize(rs, rs.Len())
+	rr.fill(rr.Size())
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		//nolint:errcheck // errors not checked in benchmarks.
-		_, _ = rr.Discard(n)
+		_, err := rr.Discard(32 * 1024)
+		if err != nil {
+			if !errors.Is(err, io.EOF) {
+				b.Fatal(err)
+			}
+			b.StopTimer()
+			rs.Reset(s)
+			rr.Reset(rs)
+			rr.fill(rr.Size())
+			b.StartTimer()
+		}
+	}
+}
+
+func BenchmarkFill(b *testing.B) {
+	s := strings.Repeat("x", 32*1024)
+	rs := strings.NewReader(s)
+	rr := NewReaderSize(rs, rs.Len())
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		rr.fill(rr.Size())
+		if rr.err != nil {
+			b.Fatal(rr.err)
+		}
+
 		rs.Reset(s)
 		rr.Reset(rs)
 	}
