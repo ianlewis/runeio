@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1699682462407,
+  "lastUpdate": 1699683479150,
   "repoUrl": "https://github.com/ianlewis/runeio",
   "entries": {
     "Benchmark": [
@@ -60,6 +60,66 @@ window.BENCHMARK_DATA = {
             "value": 324575,
             "unit": "ns/op",
             "extra": "37951 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "ianmlewis@gmail.com",
+            "name": "Ian Lewis",
+            "username": "ianlewis"
+          },
+          "committer": {
+            "email": "ianmlewis@gmail.com",
+            "name": "Ian Lewis",
+            "username": "ianlewis"
+          },
+          "distinct": false,
+          "id": "5cbc6eacd6d80983472ee33d5a85cd23747d6fe4",
+          "message": "docs: Add benchmark instructions to CONTRIBUTING\n\nAdd instructions on running benchmarks and viewing data to\nCONTRIBUTING.md.\n\nSigned-off-by: Ian Lewis <ianmlewis@gmail.com>",
+          "timestamp": "2023-11-11T06:11:27Z",
+          "tree_id": "1d8a4b0632ccc595482f6ac8560f0f6ce994f232",
+          "url": "https://github.com/ianlewis/runeio/commit/5cbc6eacd6d80983472ee33d5a85cd23747d6fe4"
+        },
+        "date": 1699683478681,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkReadSmall",
+            "value": 5113,
+            "unit": "ns/op",
+            "extra": "2342031 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadLarge",
+            "value": 327059,
+            "unit": "ns/op",
+            "extra": "36909 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekSmall",
+            "value": 1632,
+            "unit": "ns/op",
+            "extra": "7353036 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekLarge",
+            "value": 104203,
+            "unit": "ns/op",
+            "extra": "114768 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDiscardSmall",
+            "value": 5055,
+            "unit": "ns/op",
+            "extra": "2429534 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDiscardLarge",
+            "value": 326277,
+            "unit": "ns/op",
+            "extra": "37897 times\n4 procs"
           }
         ]
       }
