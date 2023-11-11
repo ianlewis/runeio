@@ -770,6 +770,20 @@ func TestRuneReader_Reset_ZeroValue(t *testing.T) {
 	}
 }
 
+func BenchmarkReadRune(b *testing.B) {
+	s := strings.Repeat("x", 512+1)
+	rs := strings.NewReader(s)
+	rr := NewReader(rs)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		//nolint:errcheck // errors not checked in benchmarks.
+		_, _, _ = rr.ReadRune()
+		rs.Reset(s)
+		rr.Reset(rs)
+	}
+}
+
 func BenchmarkReadSmall(b *testing.B) {
 	s := strings.Repeat("x", 512+1)
 	rs := strings.NewReader(s)
