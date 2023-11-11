@@ -145,6 +145,24 @@ You can run all unit tests using the `unit-test` make target:
 make unit-test
 ```
 
+#### Running benchmarks
+
+You can run benchmarks using the `benchmark` make target:
+
+```shell
+make benchmark
+```
+
+Benchmark running time can be set with the `BENCHTIME` environment variable.
+
+```shell
+BENCHTIME=10s make benchmark
+```
+
+Benchmark charts can be viewed on GitHub Pages:
+
+https://ianlewis.github.io/runeio/dev/bench/
+
 #### Commit and push your code
 
 Make sure to stage any change or new files or new files.
