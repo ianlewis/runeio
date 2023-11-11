@@ -95,7 +95,7 @@ func (r *RuneReader) Read(p []rune) (int, error) {
 func (r *RuneReader) ReadRune() (rune, int, error) {
 	r.fill(1)
 
-	if r.buffered() == 0 {
+	if r.Buffered() == 0 {
 		return 0, 0, r.readErr()
 	}
 
@@ -146,12 +146,12 @@ func (r *RuneReader) Peek(n int) ([]rune, error) {
 
 	r.lastRune = -1
 
-	if n > r.buffered() {
+	if n > r.Buffered() {
 		r.fill(n)
 	}
 
-	if n > r.buffered() {
-		n = r.buffered()
+	if n > r.Buffered() {
+		n = r.Buffered()
 	}
 
 	return r.buf[r.r : r.r+n], r.readErr()
@@ -199,8 +199,8 @@ func (r *RuneReader) UnreadRune() error {
 	return nil
 }
 
-// buffered returns the number of runes that can be read from the buffer.
-func (r *RuneReader) buffered() int {
+// Buffered returns the number of runes that can be read from the buffer.
+func (r *RuneReader) Buffered() int {
 	return r.e - r.r
 }
 

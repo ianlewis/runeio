@@ -814,6 +814,60 @@ func BenchmarkReadLarge(b *testing.B) {
 	}
 }
 
+func BenchmarkNoCopySmall(b *testing.B) {
+	n := 512
+	s := strings.Repeat("x", n+1)
+	rs := strings.NewReader(s)
+	rr := NewReader(rs)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		var read int
+		for read < n {
+			n := rr.Buffered()
+			if n == 0 {
+				n = 1
+			}
+			//nolint:errcheck // errors not checked in benchmarks.
+			buf, _ := rr.Peek(n)
+			p := len(buf)
+			//nolint:errcheck // errors not checked in benchmarks.
+			_, _ = rr.Discard(p)
+			read += p
+		}
+
+		rs.Reset(s)
+		rr.Reset(rs)
+	}
+}
+
+func BenchmarkNoCopyLarge(b *testing.B) {
+	n := 32 * 1024
+	s := strings.Repeat("x", n+1)
+	rs := strings.NewReader(s)
+	rr := NewReader(rs)
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		var read int
+		for read < n {
+			n := rr.Buffered()
+			if n == 0 {
+				n = 1
+			}
+			//nolint:errcheck // errors not checked in benchmarks.
+			buf, _ := rr.Peek(n)
+			p := len(buf)
+			//nolint:errcheck // errors not checked in benchmarks.
+			_, _ = rr.Discard(p)
+			read += p
+		}
+
+		rs.Reset(s)
+		rr.Reset(rs)
+	}
+}
+
 func BenchmarkPeekSmall(b *testing.B) {
 	n := 512
 	s := strings.Repeat("x", n+1)
