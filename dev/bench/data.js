@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1699683479150,
+  "lastUpdate": 1699683996236,
   "repoUrl": "https://github.com/ianlewis/runeio",
   "entries": {
     "Benchmark": [
@@ -120,6 +120,66 @@ window.BENCHMARK_DATA = {
             "value": 326277,
             "unit": "ns/op",
             "extra": "37897 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "ianmlewis@gmail.com",
+            "name": "Ian Lewis",
+            "username": "ianlewis"
+          },
+          "committer": {
+            "email": "ianmlewis@gmail.com",
+            "name": "Ian Lewis",
+            "username": "ianlewis"
+          },
+          "distinct": false,
+          "id": "0d992a38016a805be484e15061092a030bdf5151",
+          "message": "ci: Update workflow triggers\n\nSigned-off-by: Ian Lewis <ianmlewis@gmail.com>",
+          "timestamp": "2023-11-11T06:22:00Z",
+          "tree_id": "2d6c68226025b7048f5d4d06d9f087d1ac2a4eed",
+          "url": "https://github.com/ianlewis/runeio/commit/0d992a38016a805be484e15061092a030bdf5151"
+        },
+        "date": 1699683995839,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkReadSmall",
+            "value": 5113,
+            "unit": "ns/op",
+            "extra": "2349128 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadLarge",
+            "value": 327514,
+            "unit": "ns/op",
+            "extra": "36805 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekSmall",
+            "value": 1632,
+            "unit": "ns/op",
+            "extra": "7305559 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekLarge",
+            "value": 104472,
+            "unit": "ns/op",
+            "extra": "115716 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDiscardSmall",
+            "value": 5092,
+            "unit": "ns/op",
+            "extra": "2403306 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDiscardLarge",
+            "value": 325280,
+            "unit": "ns/op",
+            "extra": "37606 times\n4 procs"
           }
         ]
       }
