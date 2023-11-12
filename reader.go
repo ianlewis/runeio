@@ -118,16 +118,32 @@ func (r *RuneReader) Discard(n int) (int, error) {
 		return 0, ErrNegativeCount
 	}
 
-	for i := 0; i < n; i++ {
-		_, _, err := r.ReadRune()
-		if err != nil {
-			return i, err
-		}
-	}
-
 	r.lastRune = -1
 
-	return n, nil
+	if n < r.Buffered() {
+		r.r += n
+		return n, nil
+	}
+
+	discarded := r.Buffered()
+	remaining := n - discarded
+	r.r = 0
+	r.e = 0
+
+	if err := r.readErr(); err != nil {
+		return discarded, err
+	}
+
+	for i := 0; i < remaining; i++ {
+		_, _, err := r.rd.ReadRune()
+		if err != nil {
+			//nolint:wrapcheck // we don't need to wrap the read error.
+			return discarded, err
+		}
+		discarded++
+	}
+
+	return discarded, nil
 }
 
 // Peek returns the next n runes from the buffer without advancing the reader.

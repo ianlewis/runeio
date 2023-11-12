@@ -426,6 +426,28 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
+			name:    "discard over buffer",
+			str:     "Hello, 世界",
+			bufSize: 5,
+			expected: []expectation{
+				&expectedSize{
+					expectedSize: 5,
+				},
+				&expectedDiscard{
+					size:     7,
+					expected: 7,
+				},
+				&expectedPeek{
+					size:          5,
+					expectedRunes: []rune("世界"),
+					expectedErr:   io.EOF,
+				},
+				&expectedSize{
+					expectedSize: 5,
+				},
+			},
+		},
+		{
 			name: "discard neg count",
 			str:  "Hello, 世界",
 			expected: []expectation{
@@ -603,7 +625,7 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name: "peek-unread",
+			name: "peek unread",
 			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedRead{
@@ -625,7 +647,7 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name: "discard-unread",
+			name: "discard unread",
 			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedRead{
@@ -967,59 +989,28 @@ func BenchmarkPeekLarge(b *testing.B) {
 	}
 }
 
-func BenchmarkDiscardSmall(b *testing.B) {
-	n := 32 * 1024
-	d := n / 64
-	s := strings.Repeat("x", n)
-	rs := strings.NewReader(s)
-	rr := NewReaderSize(rs, n)
-	rr.fill()
-	b.ResetTimer()
-
-	var total int
-	for i := 0; i < b.N; i++ {
-		discarded, err := rr.Discard(d)
-		if err != nil {
-			b.Fatal(err)
-		}
-		total += discarded
-		if total == n {
-			b.StopTimer()
-			rs.Reset(s)
-			rr.Reset(rs)
-			rr.fill()
-			total = 0
-			b.StartTimer()
-		}
-	}
-}
-
-func BenchmarkDiscardLarge(b *testing.B) {
-	n := 32 * 1024
-	s := strings.Repeat("x", n)
-	rs := strings.NewReader(s)
-	rr := NewReaderSize(rs, n)
-	rr.fill()
-	b.ResetTimer()
-
-	for i := 0; i < b.N; i++ {
-		_, err := rr.Discard(32 * 1024)
-		if err != nil {
-			b.Fatal(err)
-		}
-
-		b.StopTimer()
-		rs.Reset(s)
-		rr.Reset(rs)
-		rr.fill()
-		b.StartTimer()
-	}
-}
-
 type endlessReader struct{}
 
 func (endlessReader) ReadRune() (rune, int, error) {
-	return 'a', 1, nil
+	return 'x', 1, nil
+}
+
+func BenchmarkDiscard(b *testing.B) {
+	n := 1024
+	rr := NewReaderSize(&endlessReader{}, 1024)
+	rr.fill()
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		// Always discard 5x the buffer.
+		_, err := rr.Discard(n * 5)
+		if err != nil {
+			b.Fatal(err)
+		}
+		b.StopTimer()
+		rr.fill()
+		b.StartTimer()
+	}
 }
 
 func BenchmarkFill(b *testing.B) {
