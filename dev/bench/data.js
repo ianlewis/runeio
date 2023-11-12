@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1699753658976,
+  "lastUpdate": 1699755568781,
   "repoUrl": "https://github.com/ianlewis/runeio",
   "entries": {
     "Benchmark": [
@@ -588,6 +588,96 @@ window.BENCHMARK_DATA = {
             "value": 37743,
             "unit": "ns/op",
             "extra": "317427 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "ianmlewis@gmail.com",
+            "name": "Ian Lewis",
+            "username": "ianlewis"
+          },
+          "committer": {
+            "email": "ianmlewis@gmail.com",
+            "name": "Ian Lewis",
+            "username": "ianlewis"
+          },
+          "distinct": false,
+          "id": "efc16b7242c42094a9c08511a7e70e2f31447df7",
+          "message": "perf: Fill buffer to minimize copies\n\n```\ngoos: linux\ngoarch: amd64\npkg: github.com/ianlewis/runeio\ncpu: Intel(R) Core(TM) i7-7567U CPU @ 3.50GHz\n                     │   old.txt    │               new.txt                │\n                     │    sec/op    │    sec/op     vs base                │\nReadRune-4             6.238n ± 10%   4.649n ±  9%  -25.47% (p=0.000 n=15)\nReadRuneUnbuffered-4   9.886n ±  7%   6.758n ±  7%  -31.64% (p=0.000 n=15)\nReadSmall-4            3.015µ ± 10%   1.988µ ± 12%  -34.06% (p=0.000 n=15)\nReadLarge-4            201.3µ ± 15%   123.8µ ± 11%  -38.51% (p=0.000 n=15)\nNoCopySmall-4          250.4µ ±  1%   206.3µ ±  7%  -17.61% (p=0.000 n=15)\nNoCopyLarge-4          7.780m ±  1%   6.648m ±  7%  -14.55% (p=0.000 n=15)\nPeekSmall-4            3.527n ±  6%   3.275n ±  4%   -7.14% (p=0.000 n=15)\nPeekLarge-4            3.526n ±  0%   3.276n ±  6%   -7.09% (p=0.000 n=15)\nDiscardSmall-4         2.492µ ± 13%   1.759µ ±  7%  -29.41% (p=0.000 n=15)\nDiscardLarge-4         181.8µ ±  8%   114.2µ ± 16%  -37.17% (p=0.000 n=15)\nFill-4                 36.42µ ±  6%   36.89µ ±  7%   +1.30% (p=0.016 n=15)\ngeomean                2.396µ         1.845µ        -23.01%\n```\n\nFixes #52\n\nSigned-off-by: Ian Lewis <ianmlewis@gmail.com>",
+          "timestamp": "2023-11-12T02:09:07Z",
+          "tree_id": "15e1db33b22db9bd657560901c0fa6426e64bba7",
+          "url": "https://github.com/ianlewis/runeio/commit/efc16b7242c42094a9c08511a7e70e2f31447df7"
+        },
+        "date": 1699755568196,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkReadRune",
+            "value": 4.443,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkReadRuneUnbuffered",
+            "value": 9.284,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkReadSmall",
+            "value": 2076,
+            "unit": "ns/op",
+            "extra": "5784544 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkReadLarge",
+            "value": 132154,
+            "unit": "ns/op",
+            "extra": "90835 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkNoCopySmall",
+            "value": 274743,
+            "unit": "ns/op",
+            "extra": "43563 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkNoCopyLarge",
+            "value": 8620868,
+            "unit": "ns/op",
+            "extra": "1389 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkPeekSmall",
+            "value": 4.35,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkPeekLarge",
+            "value": 4.376,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDiscardSmall",
+            "value": 1927,
+            "unit": "ns/op",
+            "extra": "6255273 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDiscardLarge",
+            "value": 121890,
+            "unit": "ns/op",
+            "extra": "98415 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkFill",
+            "value": 48743,
+            "unit": "ns/op",
+            "extra": "246150 times\n2 procs"
           }
         ]
       }
