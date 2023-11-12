@@ -771,88 +771,101 @@ func TestRuneReader_Reset_ZeroValue(t *testing.T) {
 }
 
 func BenchmarkReadRune(b *testing.B) {
-	s := strings.Repeat("x", 32*1024)
+	n := 32 * 1024
+	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
-	rr := NewReaderSize(rs, rs.Len())
-	rr.fill(rr.Size())
+	rr := NewReaderSize(rs, n)
+	rr.fill(n)
 	b.ResetTimer()
 
+	var total int
 	for i := 0; i < b.N; i++ {
 		_, _, err := rr.ReadRune()
 		if err != nil {
-			if !errors.Is(err, io.EOF) {
-				b.Fatal(err)
-			}
+			b.Fatal(err)
+		}
+		total++
+		if total == n {
 			b.StopTimer()
 			rs.Reset(s)
 			rr.Reset(rs)
 			rr.fill(rr.Size())
+			total = 0
 			b.StartTimer()
 		}
 	}
 }
 
 func BenchmarkReadRuneUnbuffered(b *testing.B) {
-	s := strings.Repeat("x", 32*1024)
+	n := 32 * 1024
+	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
 	rr := NewReader(rs)
 	b.ResetTimer()
 
+	var total int
 	for i := 0; i < b.N; i++ {
 		_, _, err := rr.ReadRune()
 		if err != nil {
-			if !errors.Is(err, io.EOF) {
-				b.Fatal(err)
-			}
+			b.Fatal(err)
+		}
+		total++
+		if total == n {
 			rs.Reset(s)
 			rr.Reset(rs)
+			total = 0
 		}
 	}
 }
 
 func BenchmarkReadSmall(b *testing.B) {
-	s := strings.Repeat("x", 32*1024)
+	n := 32 * 1024
+	readsize := n / 64
+	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
-	rr := NewReaderSize(rs, rs.Len())
-	rr.fill(rr.Size())
-	buf := make([]rune, 512)
+	rr := NewReaderSize(rs, n)
+	rr.fill(n)
+	buf := make([]rune, readsize)
 	b.ResetTimer()
 
+	var total int
 	for i := 0; i < b.N; i++ {
-		_, err := rr.Read(buf)
+		read, err := rr.Read(buf)
 		if err != nil {
-			if !errors.Is(err, io.EOF) {
-				b.Fatal(err)
-			}
+			b.Fatal(err)
+		}
+		total += read
+		if total == n {
 			b.StopTimer()
 			rs.Reset(s)
 			rr.Reset(rs)
-			rr.fill(rr.Size())
+			rr.fill(n)
+			total = 0
 			b.StartTimer()
 		}
 	}
 }
 
 func BenchmarkReadLarge(b *testing.B) {
-	s := strings.Repeat("x", 32*1024*32)
+	n := 32 * 1024
+	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
-	rr := NewReaderSize(rs, rs.Len())
-	rr.fill(rr.Size())
-	buf := make([]rune, 32*1024)
+	rr := NewReaderSize(rs, n)
+	rr.fill(n)
+	buf := make([]rune, n)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		_, err := rr.Read(buf)
 		if err != nil {
-			if !errors.Is(err, io.EOF) {
-				b.Fatal(err)
-			}
-			b.StopTimer()
-			rs.Reset(s)
-			rr.Reset(rs)
-			rr.fill(rr.Size())
-			b.StartTimer()
+			b.Fatal(err)
 		}
+
+		b.StopTimer()
+		rs.Reset(s)
+		rr.Reset(rs)
+		rr.fill(n)
+		b.StartTimer()
 	}
 }
 
@@ -955,62 +968,72 @@ func BenchmarkPeekLarge(b *testing.B) {
 }
 
 func BenchmarkDiscardSmall(b *testing.B) {
-	s := strings.Repeat("x", 32*1024)
+	n := 32 * 1024
+	d := n / 64
+	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
-	rr := NewReaderSize(rs, rs.Len())
-	rr.fill(rr.Size())
+	rr := NewReaderSize(rs, n)
+	rr.fill(n)
 	b.ResetTimer()
 
+	var total int
 	for i := 0; i < b.N; i++ {
-		_, err := rr.Discard(512)
+		discarded, err := rr.Discard(d)
 		if err != nil {
-			if !errors.Is(err, io.EOF) {
-				b.Fatal(err)
-			}
+			b.Fatal(err)
+		}
+		total += discarded
+		if total == n {
 			b.StopTimer()
 			rs.Reset(s)
 			rr.Reset(rs)
 			rr.fill(rr.Size())
+			total = 0
 			b.StartTimer()
 		}
 	}
 }
 
 func BenchmarkDiscardLarge(b *testing.B) {
-	s := strings.Repeat("x", 32*1024*32)
+	n := 32 * 1024
+	s := strings.Repeat("x", n)
 	rs := strings.NewReader(s)
-	rr := NewReaderSize(rs, rs.Len())
-	rr.fill(rr.Size())
+	rr := NewReaderSize(rs, n)
+	rr.fill(n)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		_, err := rr.Discard(32 * 1024)
 		if err != nil {
-			if !errors.Is(err, io.EOF) {
-				b.Fatal(err)
-			}
-			b.StopTimer()
-			rs.Reset(s)
-			rr.Reset(rs)
-			rr.fill(rr.Size())
-			b.StartTimer()
+			b.Fatal(err)
 		}
+
+		b.StopTimer()
+		rs.Reset(s)
+		rr.Reset(rs)
+		rr.fill(n)
+		b.StartTimer()
 	}
 }
 
+type endlessReader struct{}
+
+func (endlessReader) ReadRune() (rune, int, error) {
+	return 'a', 1, nil
+}
+
 func BenchmarkFill(b *testing.B) {
-	s := strings.Repeat("x", 32*1024)
-	rs := strings.NewReader(s)
-	rr := NewReaderSize(rs, rs.Len())
+	n := 32 * 1024
+	rr := NewReaderSize(&endlessReader{}, n)
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		rr.fill(rr.Size())
+		rr.fill(n)
 		if rr.err != nil {
 			b.Fatal(rr.err)
 		}
 
-		rs.Reset(s)
-		rr.Reset(rs)
+		// NOTE: Simulate reading half of the buffer.
+		rr.r = rr.Size() / 2
 	}
 }
