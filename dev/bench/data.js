@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1699755568781,
+  "lastUpdate": 1699760987166,
   "repoUrl": "https://github.com/ianlewis/runeio",
   "entries": {
     "Benchmark": [
@@ -678,6 +678,90 @@ window.BENCHMARK_DATA = {
             "value": 48743,
             "unit": "ns/op",
             "extra": "246150 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "ianmlewis@gmail.com",
+            "name": "Ian Lewis",
+            "username": "ianlewis"
+          },
+          "committer": {
+            "email": "ianmlewis@gmail.com",
+            "name": "Ian Lewis",
+            "username": "ianlewis"
+          },
+          "distinct": false,
+          "id": "2cc6be3fcbfcf0defdd50c2a65207774dfd412b8",
+          "message": "perf: Optimize `Discard`\n\nOptimize `Discard` so that `ReadRune` isn't called. Discarding from the\nbuffer is simply an add and assignment so it's too fast for benchmarks.\nBenchmarks updated to test discarding more than the buffer.\n\nFixes #62\n\nSigned-off-by: Ian Lewis <ianmlewis@gmail.com>",
+          "timestamp": "2023-11-12T03:42:17Z",
+          "tree_id": "6445f9060984227d77f4df7ff72ad5a9bfd60e41",
+          "url": "https://github.com/ianlewis/runeio/commit/2cc6be3fcbfcf0defdd50c2a65207774dfd412b8"
+        },
+        "date": 1699760986838,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkReadRune",
+            "value": 3.846,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadRuneUnbuffered",
+            "value": 7.566,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadSmall",
+            "value": 1828,
+            "unit": "ns/op",
+            "extra": "6503870 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadLarge",
+            "value": 116801,
+            "unit": "ns/op",
+            "extra": "107212 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNoCopySmall",
+            "value": 108005,
+            "unit": "ns/op",
+            "extra": "113702 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNoCopyLarge",
+            "value": 3390244,
+            "unit": "ns/op",
+            "extra": "3537 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekSmall",
+            "value": 3.711,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekLarge",
+            "value": 3.716,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDiscard",
+            "value": 10344,
+            "unit": "ns/op",
+            "extra": "1142540 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkFill",
+            "value": 37940,
+            "unit": "ns/op",
+            "extra": "315733 times\n4 procs"
           }
         ]
       }
