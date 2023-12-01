@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1701418826107,
+  "lastUpdate": 1701419202413,
   "repoUrl": "https://github.com/ianlewis/runeio",
   "entries": {
     "Benchmark": [
@@ -1266,6 +1266,90 @@ window.BENCHMARK_DATA = {
             "value": 42094,
             "unit": "ns/op",
             "extra": "285057 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": false,
+          "id": "9a26a7408f210620dec73eb66b124acc5018a86f",
+          "message": "build(deps): Bump github/codeql-action from 2.22.5 to 2.22.8\n\nBumps [github/codeql-action](https://github.com/github/codeql-action) from 2.22.5 to 2.22.8.\n- [Release notes](https://github.com/github/codeql-action/releases)\n- [Changelog](https://github.com/github/codeql-action/blob/main/CHANGELOG.md)\n- [Commits](https://github.com/github/codeql-action/compare/74483a38d39275f33fcff5f35b679b5ca4a26a99...407ffafae6a767df3e0230c3df91b6443ae8df75)\n\n---\nupdated-dependencies:\n- dependency-name: github/codeql-action\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>",
+          "timestamp": "2023-12-01T08:18:20Z",
+          "tree_id": "62eef81074c9c66c0d99ebe2e5c27a8fe44df044",
+          "url": "https://github.com/ianlewis/runeio/commit/9a26a7408f210620dec73eb66b124acc5018a86f"
+        },
+        "date": 1701419201485,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkReadRune",
+            "value": 3.905,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadRuneUnbuffered",
+            "value": 7.969,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadSmall",
+            "value": 1832,
+            "unit": "ns/op",
+            "extra": "6688020 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadLarge",
+            "value": 117321,
+            "unit": "ns/op",
+            "extra": "104482 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNoCopySmall",
+            "value": 107732,
+            "unit": "ns/op",
+            "extra": "107995 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNoCopyLarge",
+            "value": 3450530,
+            "unit": "ns/op",
+            "extra": "3480 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekSmall",
+            "value": 3.408,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekLarge",
+            "value": 3.412,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDiscard",
+            "value": 13499,
+            "unit": "ns/op",
+            "extra": "1000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkFill",
+            "value": 42511,
+            "unit": "ns/op",
+            "extra": "282748 times\n4 procs"
           }
         ]
       }
