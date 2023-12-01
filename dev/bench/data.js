@@ -38,18 +38,6 @@ window.BENCHMARK_DATA = {
             "extra": "36847 times\n4 procs"
           },
           {
-            "name": "BenchmarkPeekSmall",
-            "value": 1638,
-            "unit": "ns/op",
-            "extra": "7304431 times\n4 procs"
-          },
-          {
-            "name": "BenchmarkPeekLarge",
-            "value": 104074,
-            "unit": "ns/op",
-            "extra": "115509 times\n4 procs"
-          },
-          {
             "name": "BenchmarkDiscardSmall",
             "value": 5051,
             "unit": "ns/op",
@@ -98,18 +86,6 @@ window.BENCHMARK_DATA = {
             "extra": "36909 times\n4 procs"
           },
           {
-            "name": "BenchmarkPeekSmall",
-            "value": 1632,
-            "unit": "ns/op",
-            "extra": "7353036 times\n4 procs"
-          },
-          {
-            "name": "BenchmarkPeekLarge",
-            "value": 104203,
-            "unit": "ns/op",
-            "extra": "114768 times\n4 procs"
-          },
-          {
             "name": "BenchmarkDiscardSmall",
             "value": 5055,
             "unit": "ns/op",
@@ -156,18 +132,6 @@ window.BENCHMARK_DATA = {
             "value": 327514,
             "unit": "ns/op",
             "extra": "36805 times\n4 procs"
-          },
-          {
-            "name": "BenchmarkPeekSmall",
-            "value": 1632,
-            "unit": "ns/op",
-            "extra": "7305559 times\n4 procs"
-          },
-          {
-            "name": "BenchmarkPeekLarge",
-            "value": 104472,
-            "unit": "ns/op",
-            "extra": "115716 times\n4 procs"
           },
           {
             "name": "BenchmarkDiscardSmall",
@@ -222,18 +186,6 @@ window.BENCHMARK_DATA = {
             "value": 326266,
             "unit": "ns/op",
             "extra": "36813 times\n4 procs"
-          },
-          {
-            "name": "BenchmarkPeekSmall",
-            "value": 1635,
-            "unit": "ns/op",
-            "extra": "7367794 times\n4 procs"
-          },
-          {
-            "name": "BenchmarkPeekLarge",
-            "value": 103617,
-            "unit": "ns/op",
-            "extra": "116193 times\n4 procs"
           },
           {
             "name": "BenchmarkDiscardSmall",
@@ -300,18 +252,6 @@ window.BENCHMARK_DATA = {
             "value": 689429,
             "unit": "ns/op",
             "extra": "17419 times\n2 procs"
-          },
-          {
-            "name": "BenchmarkPeekSmall",
-            "value": 2479,
-            "unit": "ns/op",
-            "extra": "4839997 times\n2 procs"
-          },
-          {
-            "name": "BenchmarkPeekLarge",
-            "value": 156938,
-            "unit": "ns/op",
-            "extra": "75600 times\n2 procs"
           },
           {
             "name": "BenchmarkDiscardSmall",
