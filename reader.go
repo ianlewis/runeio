@@ -130,10 +130,19 @@ func (r *RuneReader) Discard(n int) (int, error) {
 	r.r = 0
 	r.e = 0
 
+	// If we don't need to discard any more we can return.
+	// NOTE: We do not want to return an error that may have already been
+	// encountered by fill.
+	if remaining == 0 {
+		return discarded, nil
+	}
+
+	// Check if we have an error already. If so we can return it.
 	if err := r.readErr(); err != nil {
 		return discarded, err
 	}
 
+	// Read and discard the remaining runes.
 	for i := 0; i < remaining; i++ {
 		_, _, err := r.rd.ReadRune()
 		if err != nil {

@@ -51,7 +51,7 @@ func (e *expectedPeek) expect(t *testing.T, r *RuneReader) {
 	t.Helper()
 	p, err := r.Peek(e.size)
 	if got, want := err, e.expectedErr; !errors.Is(got, want) {
-		t.Errorf("Peek: expected error: got: %v, want: %v", got, want)
+		t.Errorf("Peek: unexpected error: got: %v, want: %v", got, want)
 	}
 
 	if got, want := p, e.expectedRunes; !sliceEqual(got, want) {
@@ -69,7 +69,7 @@ func (e *expectedDiscard) expect(t *testing.T, r *RuneReader) {
 	t.Helper()
 	n, err := r.Discard(e.size)
 	if got, want := err, e.expectedErr; !errors.Is(got, want) {
-		t.Errorf("Discard: expected error: got: %v, want: %v", got, want)
+		t.Errorf("Discard: unexpected error: got: %v, want: %v", got, want)
 	}
 
 	if got, want := n, e.expected; got != want {
@@ -89,7 +89,7 @@ func (e *expectedRead) expect(t *testing.T, r *RuneReader) {
 	p := make([]rune, e.size)
 	n, err := r.Read(p)
 	if got, want := err, e.expectedErr; !errors.Is(got, want) {
-		t.Errorf("Read: expected error: got: %v, want: %v", got, want)
+		t.Errorf("Read: unexpected error: got: %v, want: %v", got, want)
 	}
 
 	if got, want := n, e.expectedNum; got != want {
@@ -124,7 +124,7 @@ func (e *expectedReadRune) expect(t *testing.T, r *RuneReader) {
 	t.Helper()
 	rn, size, err := r.ReadRune()
 	if got, want := err, e.expectedErr; !errors.Is(got, want) {
-		t.Errorf("ReadRune: expected error: got: %v, want: %v", got, want)
+		t.Errorf("ReadRune: unexpected error: got: %v, want: %v", got, want)
 	}
 
 	if got, want := size, e.expectedSize; got != want {
@@ -154,7 +154,7 @@ func (e *expectedUnreadRune) expect(t *testing.T, r *RuneReader) {
 	t.Helper()
 	err := r.UnreadRune()
 	if got, want := err, e.expectedErr; !errors.Is(got, want) {
-		t.Errorf("UnreadRune: expected error: got: %v, want: %v", got, want)
+		t.Errorf("UnreadRune: unexpected error: got: %v, want: %v", got, want)
 	}
 }
 
@@ -385,7 +385,7 @@ func TestRuneReader(t *testing.T) {
 			},
 		},
 		{
-			name: "discard exact",
+			name: "discard single",
 			str:  "Hello, 世界/World/Universe!",
 			expected: []expectation{
 				&expectedSize{
@@ -398,6 +398,62 @@ func TestRuneReader(t *testing.T) {
 				&expectedPeek{
 					size:          6,
 					expectedRunes: []rune("/World"),
+				},
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+			},
+		},
+		{
+			name: "discard exact",
+			str:  "Hello, 世界/World/Universe!",
+			expected: []expectation{
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+				&expectedDiscard{
+					size:     25,
+					expected: 25,
+				},
+				&expectedPeek{
+					size:        1,
+					expectedErr: io.EOF,
+				},
+				&expectedDiscard{
+					size:        1,
+					expectedErr: io.EOF,
+				},
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+			},
+		},
+		{
+			name: "discard multiple",
+			str:  "Hello, 世界/World/Universe!",
+			expected: []expectation{
+				&expectedSize{
+					expectedSize: defaultBufSize,
+				},
+				&expectedDiscard{
+					size:     9,
+					expected: 9,
+				},
+				&expectedPeek{
+					size:          6,
+					expectedRunes: []rune("/World"),
+				},
+				&expectedDiscard{
+					size:     16,
+					expected: 16,
+				},
+				&expectedPeek{
+					size:        1,
+					expectedErr: io.EOF,
+				},
+				&expectedDiscard{
+					size:        1,
+					expectedErr: io.EOF,
 				},
 				&expectedSize{
 					expectedSize: defaultBufSize,
