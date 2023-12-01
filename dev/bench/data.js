@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1701413801143,
+  "lastUpdate": 1701418826107,
   "repoUrl": "https://github.com/ianlewis/runeio",
   "entries": {
     "Benchmark": [
@@ -1182,6 +1182,90 @@ window.BENCHMARK_DATA = {
             "value": 42358,
             "unit": "ns/op",
             "extra": "283950 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": false,
+          "id": "507e63e8dd6ff4016c3001a1e6d47bf21c302f29",
+          "message": "build(deps-dev): Bump prettier from 3.0.3 to 3.1.0\n\nBumps [prettier](https://github.com/prettier/prettier) from 3.0.3 to 3.1.0.\n- [Release notes](https://github.com/prettier/prettier/releases)\n- [Changelog](https://github.com/prettier/prettier/blob/main/CHANGELOG.md)\n- [Commits](https://github.com/prettier/prettier/compare/3.0.3...3.1.0)\n\n---\nupdated-dependencies:\n- dependency-name: prettier\n  dependency-type: direct:development\n  update-type: version-update:semver-minor\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>",
+          "timestamp": "2023-12-01T07:25:13Z",
+          "tree_id": "737db4affcf1aa59afb17fbb83b453aa986e7199",
+          "url": "https://github.com/ianlewis/runeio/commit/507e63e8dd6ff4016c3001a1e6d47bf21c302f29"
+        },
+        "date": 1701418825725,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkReadRune",
+            "value": 3.873,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadRuneUnbuffered",
+            "value": 7.993,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadSmall",
+            "value": 1824,
+            "unit": "ns/op",
+            "extra": "6543657 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadLarge",
+            "value": 116952,
+            "unit": "ns/op",
+            "extra": "104374 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNoCopySmall",
+            "value": 108003,
+            "unit": "ns/op",
+            "extra": "109233 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNoCopyLarge",
+            "value": 3449914,
+            "unit": "ns/op",
+            "extra": "3475 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekSmall",
+            "value": 3.408,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekLarge",
+            "value": 3.659,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDiscard",
+            "value": 13228,
+            "unit": "ns/op",
+            "extra": "977329 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkFill",
+            "value": 42094,
+            "unit": "ns/op",
+            "extra": "285057 times\n4 procs"
           }
         ]
       }
