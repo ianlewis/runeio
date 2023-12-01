@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1701419202413,
+  "lastUpdate": 1701427492104,
   "repoUrl": "https://github.com/ianlewis/runeio",
   "entries": {
     "Benchmark": [
@@ -1350,6 +1350,90 @@ window.BENCHMARK_DATA = {
             "value": 42511,
             "unit": "ns/op",
             "extra": "282748 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": false,
+          "id": "2ea45d1d9dce87baca51853261ad711a428f60a8",
+          "message": "build(deps): Bump yamllint from 1.32.0 to 1.33.0\n\nBumps [yamllint](https://github.com/adrienverge/yamllint) from 1.32.0 to 1.33.0.\n- [Changelog](https://github.com/adrienverge/yamllint/blob/master/CHANGELOG.rst)\n- [Commits](https://github.com/adrienverge/yamllint/compare/v1.32.0...v1.33.0)\n\n---\nupdated-dependencies:\n- dependency-name: yamllint\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>",
+          "timestamp": "2023-12-01T08:24:36Z",
+          "tree_id": "a93eb72e27a94f7e4912989b549726bd9c59bb33",
+          "url": "https://github.com/ianlewis/runeio/commit/2ea45d1d9dce87baca51853261ad711a428f60a8"
+        },
+        "date": 1701427491673,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkReadRune",
+            "value": 3.879,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadRuneUnbuffered",
+            "value": 7.982,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadSmall",
+            "value": 1820,
+            "unit": "ns/op",
+            "extra": "6568506 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadLarge",
+            "value": 115096,
+            "unit": "ns/op",
+            "extra": "104887 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNoCopySmall",
+            "value": 107670,
+            "unit": "ns/op",
+            "extra": "111639 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNoCopyLarge",
+            "value": 3446123,
+            "unit": "ns/op",
+            "extra": "3457 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekSmall",
+            "value": 3.435,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekLarge",
+            "value": 3.43,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDiscard",
+            "value": 13339,
+            "unit": "ns/op",
+            "extra": "780598 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkFill",
+            "value": 41931,
+            "unit": "ns/op",
+            "extra": "286212 times\n4 procs"
           }
         ]
       }
