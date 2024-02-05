@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1701427492104,
+  "lastUpdate": 1707100697481,
   "repoUrl": "https://github.com/ianlewis/runeio",
   "entries": {
     "Benchmark": [
@@ -1374,6 +1374,90 @@ window.BENCHMARK_DATA = {
             "value": 41931,
             "unit": "ns/op",
             "extra": "286212 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "ianlewis@google.com",
+            "name": "Ian Lewis",
+            "username": "ianlewis"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "57f1083977edb1bef7e5b8d80b5a14d8f8dd3d99",
+          "message": "ci: use ianlewis/todo-issue-reopener (#89)\n\nSigned-off-by: Ian Lewis <ianmlewis@gmail.com>",
+          "timestamp": "2024-02-05T11:34:14+09:00",
+          "tree_id": "4831532dc38fe0a276e455092e4046390556b3a8",
+          "url": "https://github.com/ianlewis/runeio/commit/57f1083977edb1bef7e5b8d80b5a14d8f8dd3d99"
+        },
+        "date": 1707100696580,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkReadRune",
+            "value": 3.889,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadRuneUnbuffered",
+            "value": 7.942,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadSmall",
+            "value": 1813,
+            "unit": "ns/op",
+            "extra": "6588505 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkReadLarge",
+            "value": 117247,
+            "unit": "ns/op",
+            "extra": "102075 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNoCopySmall",
+            "value": 109526,
+            "unit": "ns/op",
+            "extra": "111709 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkNoCopyLarge",
+            "value": 3440421,
+            "unit": "ns/op",
+            "extra": "3488 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekSmall",
+            "value": 3.412,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkPeekLarge",
+            "value": 3.409,
+            "unit": "ns/op",
+            "extra": "1000000000 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDiscard",
+            "value": 13580,
+            "unit": "ns/op",
+            "extra": "919305 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkFill",
+            "value": 41982,
+            "unit": "ns/op",
+            "extra": "285717 times\n4 procs"
           }
         ]
       }
