@@ -31,15 +31,14 @@ jobs:
     strategy:
       matrix:
         go-version:
+          - "1.23"
+          - "1.22"
           - "1.21"
           - "1.20"
           - "1.19"
           - "1.18"
           - "1.17"
           - "1.16"
-          - "1.15"
-          - "1.14"
-          - "1.13"
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     if: ${{ always() }}
@@ -159,8 +158,8 @@ jobs:
         with:
           go-version-file: "go.mod"
       - env:
-          GOLANGCI_LINT_VERSION: "1.53.1"
-          GOLANGCI_LINT_CHECKSUM: "6c2f261ca50f54fe06e7be599e7ff7f2f57751175e413944ebcdf67a61ec54ea"
+          GOLANGCI_LINT_VERSION: "1.61.0"
+          GOLANGCI_LINT_CHECKSUM: "77cb0af99379d9a21d5dc8c38364d060e864a01bd2f3e30b5e8cc550c3a54111"
         run: |
           set -euo pipefail
 
