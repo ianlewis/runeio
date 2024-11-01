@@ -39,8 +39,11 @@ linters:
   disable-all: true
   enable:
     - asciicheck
+    - contextcheck
+    - copyloopvar
     - depguard
     - dogsled
+    - err113
     - errcheck
     - errorlint
     - exhaustive
@@ -53,7 +56,6 @@ linters:
     - gocyclo
     - godot
     - godox
-    - goerr113
     - gofmt
     - gofumpt
     - goheader
@@ -142,6 +144,7 @@ linters-settings:
       - default
       - prefix(github.com/ianlewis/runeio)
   gocritic:
+    disable-all: true
     enabled-checks:
       # Diagnostic
       - appendAssign
